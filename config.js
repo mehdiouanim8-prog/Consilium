@@ -6,5 +6,5 @@
 */
 window.CONSILIUM_CONFIG = {
   APPS_SCRIPT_URL: "",
-  GOOGLE_BOOKING_URL: ""
+  GOOGLE_BOOKING_URL: "https://calendar.app.google/ULt9ZaCSA2wW8pXz5"
 };
