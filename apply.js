@@ -1,82 +1,152 @@
-(() => {
-  const cfg = window.CONSILIUM_CONFIG || {};
-  const form = document.getElementById('applicationForm');
-  const submit = document.getElementById('submitButton');
-  const status = document.getElementById('formStatus');
-  const notice = document.getElementById('calendarNotice');
-  const embed = document.getElementById('calendarEmbed');
+/* Consilium application form submission and validation. */
+(function () {
+  'use strict';
 
-  function setStatus(message, kind) {
-    status.textContent = message;
-    status.className = 'form-status ' + (kind || '');
-  }
-  function setupCalendar() {
-    const url = (cfg.GOOGLE_BOOKING_URL || '').trim();
-    if (!url) {
-      notice.hidden = false;
-      notice.textContent = 'Calendar setup required: paste your Google Calendar appointment-schedule booking link into config.js. Until configured, this form will not submit.';
-      return false;
+  const form = document.getElementById('application-form');
+  if (!form) return;
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  const errorElement = document.getElementById('form-error');
+  const successElement = document.getElementById('success');
+  const referenceElement = document.getElementById('success-reference');
+  const nonceInput = document.getElementById('submission-nonce');
+  const timezoneInput = document.getElementById('applicant-timezone');
+  const dateInput = document.getElementById('appointment-date');
+  const timeInput = document.getElementById('appointment-time');
+  const honeypot = document.getElementById('website-honeypot');
+
+  let isSubmitting = false;
+  let submitted = false;
+
+  function createNonce() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID();
     }
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== 'https:' || !/(calendar\.google\.com|calendar\.app\.google)/i.test(parsed.hostname)) throw new Error('Invalid calendar URL');
-      const iframe = document.createElement('iframe');
-      iframe.src = url;
-      iframe.title = 'Consilium appointment calendar';
-      iframe.loading = 'lazy';
-      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-      embed.replaceChildren(iframe);
-      embed.hidden = false;
-      notice.hidden = true;
-      return true;
-    } catch (_) {
-      notice.hidden = false;
-      notice.textContent = 'The calendar link in config.js does not look like a valid Google Calendar booking link.';
-      return false;
+    const bytes = new Uint8Array(24);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  function showError(message) {
+    errorElement.textContent = message;
+    errorElement.hidden = false;
+  }
+
+  function clearError() {
+    errorElement.textContent = '';
+    errorElement.hidden = true;
+  }
+
+  function buildPayload() {
+    const payload = {};
+    const objectives = [];
+    for (const [key, value] of new FormData(form).entries()) {
+      if (key === 'objectives[]') {
+        objectives.push(value);
+      } else {
+        payload[key] = value;
+      }
+    }
+    payload.objectives = objectives;
+    payload.submission_nonce = nonceInput.value || createNonce();
+    payload.applicant_timezone = timezoneInput.value || 'UTC';
+    return payload;
+  }
+
+  function setSubmitting(value) {
+    isSubmitting = value;
+    submitButton.disabled = value;
+    submitButton.textContent = value ? 'Submitting…' : 'Submit application ↗';
+  }
+
+  function serverMessage(data, status) {
+    if (data && typeof data.message === 'string' && data.message.trim()) return data.message;
+    if (status === 409) return 'That appointment time is no longer available. Please choose another time.';
+    if (status === 429) return 'Too many attempts were received. Please wait a moment and try again.';
+    return 'Your application could not be submitted. Please try again.';
+  }
+
+  function populateCountries() {
+    const select = document.getElementById('country');
+    if (!select || select.options.length > 1 || typeof Intl.DisplayNames !== 'function') return;
+    const codes = ('AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW').split(' ');
+    const names = new Intl.DisplayNames(['en'], { type: 'region' });
+    const countryOptions = codes.map((code) => ({ code, name: names.of(code) }))
+      .filter((item) => item.name && item.name !== item.code)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    for (const item of countryOptions) {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.name;
+      select.appendChild(option);
     }
   }
-  setupCalendar();
+
+  populateCountries();
+  if (timezoneInput) {
+    timezoneInput.value = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  }
+  if (nonceInput && !nonceInput.value) nonceInput.value = createNonce();
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    setStatus('', '');
+    if (isSubmitting || submitted) return;
+    clearError();
+
     if (!form.reportValidity()) return;
-    if (!cfg.GOOGLE_BOOKING_URL || !cfg.APPS_SCRIPT_URL) {
-      setStatus('This application form is not live yet. The site owner must finish the calendar and secure submission setup before accepting applications.', 'error');
+    if (!dateInput.value || !timeInput.value) {
+      showError('Please select an available appointment date and time.');
+      document.getElementById('booking-calendar').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    if (!/(calendar\.google\.com|calendar\.app\.google)/i.test(new URL(cfg.GOOGLE_BOOKING_URL).hostname)) {
-      setStatus('The calendar link is invalid. Please contact Consilium.', 'error'); return;
-    }
-    const checkedObjectives = [...form.querySelectorAll('input[name="objectives"]:checked')].map(el => el.value);
-    if (!checkedObjectives.length) {
-      setStatus('Please select at least one objective.', 'error');
-      form.querySelector('fieldset').scrollIntoView({behavior:'smooth',block:'center'});
+    if (honeypot && honeypot.value.trim()) {
+      showError('We could not process this application. Please refresh the page and try again.');
       return;
     }
-    const data = Object.fromEntries(new FormData(form).entries());
-    data.objectives = checkedObjectives;
-    data.consent = form.elements.consent.checked;
-    data.submittedAt = new Date().toISOString();
-    delete data.website;
-    submit.disabled = true;
-    submit.textContent = 'Submitting…';
+
+    const payload = buildPayload();
+    nonceInput.value = payload.submission_nonce;
+    setSubmitting(true);
+
     try {
-      const response = await fetch(cfg.APPS_SCRIPT_URL, {
+      const response = await fetch('/api/applications', {
         method: 'POST',
-        headers: {'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify(data),
-        redirect: 'follow'
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        credentials: 'same-origin',
+        cache: 'no-store',
+        body: JSON.stringify(payload)
       });
-      const result = await response.json();
-      if (!response.ok || !result || result.ok !== true) throw new Error((result && result.error) || 'Submission failed');
-      form.reset();
-      setStatus('Thank you for your interest in Consilium. Your application has been received. If you booked a calendar appointment, its confirmation will be sent separately by Google Calendar.', 'success');
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (_error) {
+        throw new Error('The application service returned an unreadable response. Your application has not been confirmed.');
+      }
+
+      if (!response.ok || !result || result.ok !== true || !result.reference) {
+        if (response.status === 409 && window.ConsiliumCalendar) {
+          window.ConsiliumCalendar.clearSelection();
+          await window.ConsiliumCalendar.refreshAvailability(payload.appointment_date);
+        }
+        throw new Error(serverMessage(result, response.status));
+      }
+
+      submitted = true;
+      if (window.ConsiliumCalendar) {
+        // Refresh the date in case the pending request has just occupied its slot.
+        window.ConsiliumCalendar.refreshAvailability(payload.appointment_date).catch(() => {});
+      }
+      form.style.display = 'none';
+      referenceElement.textContent = `Application reference: ${result.reference}`;
+      successElement.style.display = 'block';
+      successElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
-      setStatus('We could not submit your application. Please try again in a moment or email consilium.consultinghq@gmail.com. Your details have not been confirmed as received.', 'error');
-    } finally {
-      submit.disabled = false;
-      submit.innerHTML = 'Submit application <span aria-hidden="true">↗</span>';
+      showError(error instanceof Error ? error.message : 'Your application could not be submitted. Please try again.');
+      setSubmitting(false);
     }
   });
 })();
