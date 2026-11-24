@@ -29,7 +29,7 @@ textarea{min-height:130px;resize:vertical}input:focus,select:focus,textarea:focu
 .check input{width:17px;height:17px;min-height:17px;margin:2px 0 0;accent-color:#fff;flex:none}
 .submit{margin-top:28px;width:100%;min-height:56px;border:1px solid #fff;background:#fff;color:#000;font:600 16px "IBM Plex Sans Condensed",Arial,sans-serif;letter-spacing:.04em;cursor:pointer}
 .submit:hover{background:#000;color:#fff}.privacy{font-size:13px;line-height:1.5;color:#888;margin-top:13px}
-.calendar-frame{width:100%;height:480px;overflow:hidden;border:1px solid var(--line);background:#000}.calendar-frame iframe{display:block;width:100%;height:100%;border:0;background:#fff}
+.booking-calendar{border:1px solid #393939;background:#070707;padding:20px;margin-top:4px}.cal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.cal-month{font-size:20px;font-weight:500;letter-spacing:.02em}.cal-nav{display:flex;gap:8px}.cal-nav button,.cal-day,.cal-slot{font:inherit;color:#fff;background:#0b0b0b;border:1px solid #393939;cursor:pointer}.cal-nav button{width:38px;height:38px;font-size:20px}.cal-nav button:disabled{opacity:.3;cursor:not-allowed}.cal-weekdays,.cal-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}.cal-weekdays{margin-bottom:7px}.cal-weekdays span{text-align:center;color:#888;font-size:12px;padding:7px 0}.cal-day{min-height:43px;font-size:14px}.cal-day:disabled{opacity:.22;cursor:not-allowed}.cal-day.selected{background:#fff;color:#000;border-color:#fff}.cal-day.today{border-color:#aaa}.cal-day.empty{visibility:hidden}.cal-prompt{font-size:14px;color:#aaa;margin:18px 0 12px}.cal-slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.cal-slot{min-height:42px;font-size:14px}.cal-slot:hover,.cal-nav button:hover{border-color:#fff}.cal-slot.selected{background:#fff;color:#000;border-color:#fff}.cal-slot:disabled{opacity:.28;cursor:not-allowed}.cal-status{font-size:13px;color:#999;line-height:1.5;margin:14px 0 0;min-height:20px}.cal-selected{font-size:14px;color:#fff;margin-top:15px}.cal-selected strong{font-weight:600}.cal-loading{color:#999;font-size:14px}.booking-calendar button:focus-visible{outline:2px solid #fff;outline-offset:2px}.booking-calendar .cal-error{color:#ddd}@media(max-width:520px){.booking-calendar{padding:14px}.cal-days,.cal-weekdays{gap:4px}.cal-day{min-height:39px}.cal-slots{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .success{display:none;margin:20px 0 60px;border:1px solid #777;padding:30px}.success h2{font-size:30px;font-weight:500;margin:0 0 10px}.success p{color:#ccc;font-size:18px;line-height:1.5;margin:0}
 footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px}
 @media(max-width:620px){.container{width:calc(100% - 32px)}header{height:72px}.brand{font-size:18px}.star{width:24px;height:24px}.intro{padding-top:45px}.grid,.check-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{margin-top:25px}}
@@ -89,7 +89,19 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 
 <h2 class="section-title">03 / Appointment availability</h2>
 <p class="hint" style="font-size:14px;line-height:1.5;margin:0 0 12px">Select an available appointment time.</p>
-<div class="calendar-frame"><iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1NcXMXYgkcxykK7Twp_nwXFbaU-vFUl_lkXciVlC555OWgAHI7DOSRp8djmmmlB8Ui2m6WSoka?gv=true" title="Consilium appointment availability" loading="lazy"></iframe></div>
+<div class="booking-calendar" id="booking-calendar" aria-label="Choose an appointment date and time">
+  <div class="cal-top"><div class="cal-month" id="cal-month">Loading calendar…</div><div class="cal-nav"><button type="button" id="cal-prev" aria-label="Previous month">‹</button><button type="button" id="cal-next" aria-label="Next month">›</button></div></div>
+  <div class="cal-weekdays" aria-hidden="true"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+  <div class="cal-days" id="cal-days"></div>
+  <p class="cal-prompt" id="cal-prompt">Select a date to view available times.</p>
+  <div class="cal-slots" id="cal-slots"></div>
+  <p class="cal-status" id="cal-status" role="status" aria-live="polite">All times are shown in Casablanca time (Africa/Casablanca).</p>
+  <p class="cal-selected" id="cal-selected" hidden></p>
+</div>
+<input type="hidden" name="appointment_date" id="appointment-date" required>
+<input type="hidden" name="appointment_time" id="appointment-time" required>
+<input type="text" name="website" id="website-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px">
+<input type="hidden" name="submission_nonce" id="submission-nonce">
 <h2 class="section-title">04 / Your approach to change</h2>
 <div class="field full"><label for="change-ability">What is your ability to accept change? *</label>
 <select id="change-ability" name="ability_to_accept_change" required>
@@ -97,7 +109,7 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 <option value="1">1 — Very resistant to change</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 — Neutral / adaptable with support</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10 — Highly open to change</option>
 </select></div>
 <button class="submit" type="submit">Submit application ↗</button>
-<p class="privacy">Your application details will be sent to Consilium for review. Appointment availability is provided by Google Calendar.</p>
+<p class="privacy">Your application and appointment request will be sent to Consilium for review. Your selected time is not confirmed until Consilium accepts the request.</p>
 </form>
 <section class="success" id="success" role="status" aria-live="polite">
 <h2>Application received.</h2>
@@ -112,20 +124,36 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
   const names=new Intl.DisplayNames(['en'],{type:'region'});
   codes.map(code=>({name:names.of(code)})).sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{const o=document.createElement('option');o.value=item.name;o.textContent=item.name;select.appendChild(o);});
 })();
+// Set this to the deployed Google Apps Script web-app URL after deployment.
+const CONSILIUM_APPS_SCRIPT_URL = '';
 const form=document.getElementById('application-form');
-form.addEventListener('submit',async function(e){
-  e.preventDefault(); if(!form.reportValidity()) return;
-  const button=form.querySelector('button[type="submit"]'); const original=button.textContent;
-  button.disabled=true;button.textContent='Submitting…';
-  try{
-    const payload={};
-    for(const [key,value] of new FormData(form).entries()){if(payload[key]!==undefined){payload[key]=Array.isArray(payload[key])?payload[key].concat(value):[payload[key],value];}else{payload[key]=value;}}
-    const response=await fetch(form.action,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
-    const result=await response.json().catch(()=>({}));
-    if(!response.ok || result.success===false) throw new Error(result.message||'Submission failed');
-    form.style.display='none';document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});
-  }catch(err){alert('Your application could not be submitted. Please try again or contact consilium.consultinghq@gmail.com.');button.disabled=false;button.textContent=original;}
-});
+const calendar=document.getElementById('booking-calendar');
+const monthLabel=document.getElementById('cal-month');
+const daysEl=document.getElementById('cal-days');
+const slotsEl=document.getElementById('cal-slots');
+const statusEl=document.getElementById('cal-status');
+const promptEl=document.getElementById('cal-prompt');
+const selectedEl=document.getElementById('cal-selected');
+const dateInput=document.getElementById('appointment-date');
+const timeInput=document.getElementById('appointment-time');
+const tz='Africa/Casablanca';
+let shownMonth=new Date(); shownMonth.setDate(1); shownMonth.setHours(12,0,0,0);
+let selectedDate=''; let selectedTime=''; let dayData={}; let requestCounter=0;
+const pad=n=>String(n).padStart(2,'0');
+const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayKey=()=>{const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const o={};parts.forEach(p=>o[p.type]=p.value);return `${o.year}-${o.month}-${o.day}`;};
+function monthName(d){return new Intl.DateTimeFormat('en',{month:'long',year:'numeric',timeZone:tz}).format(d);}
+function jsonp(url){return new Promise((resolve,reject)=>{const cb='consiliumCb'+Date.now()+Math.floor(Math.random()*10000);const script=document.createElement('script');const timer=setTimeout(()=>{cleanup();reject(new Error('Calendar connection timed out.'));},12000);function cleanup(){clearTimeout(timer);delete window[cb];script.remove();}window[cb]=data=>{cleanup();resolve(data);};script.onerror=()=>{cleanup();reject(new Error('Could not load calendar availability.'));};script.src=url+(url.includes('?')?'&':'?')+'callback='+cb;document.head.appendChild(script);});}
+function renderMonth(){monthLabel.textContent=monthName(shownMonth);daysEl.innerHTML='';slotsEl.innerHTML='';selectedDate='';selectedTime='';dateInput.value='';timeInput.value='';selectedEl.hidden=true;promptEl.textContent='Select a date to view available times.';const y=shownMonth.getFullYear(),m=shownMonth.getMonth();const first=new Date(y,m,1);const offset=(first.getDay()+6)%7;const count=new Date(y,m+1,0).getDate();for(let i=0;i<offset;i++){const b=document.createElement('button');b.type='button';b.className='cal-day empty';b.tabIndex=-1;daysEl.appendChild(b);}for(let n=1;n<=count;n++){const d=new Date(y,m,n,12);const key=dateKey(d);const b=document.createElement('button');b.type='button';b.className='cal-day';b.textContent=n;b.dataset.date=key;b.disabled=key<todayKey()||!CONSILIUM_APPS_SCRIPT_URL;b.addEventListener('click',()=>chooseDate(key,b));if(key===todayKey())b.classList.add('today');daysEl.appendChild(b);}document.getElementById('cal-prev').disabled=(shownMonth.getFullYear()===new Date().getFullYear()&&shownMonth.getMonth()<=new Date().getMonth())||!CONSILIUM_APPS_SCRIPT_URL;document.getElementById('cal-next').disabled=!CONSILIUM_APPS_SCRIPT_URL;if(!CONSILIUM_APPS_SCRIPT_URL){statusEl.textContent='Calendar setup required: the Consilium scheduling service URL has not been added yet.';statusEl.classList.add('cal-error');}}
+async function chooseDate(key,button){document.querySelectorAll('.cal-day.selected').forEach(x=>x.classList.remove('selected'));button.classList.add('selected');selectedDate=key;selectedTime='';dateInput.value='';timeInput.value='';slotsEl.innerHTML='';selectedEl.hidden=true;promptEl.textContent='Available appointment times';statusEl.textContent='Checking availability…';const req=++requestCounter;try{const data=await jsonp(CONSILIUM_APPS_SCRIPT_URL+'?action=availability&date='+encodeURIComponent(key));if(req!==requestCounter)return;if(!data||!data.ok)throw new Error(data&&data.error||'Availability could not be loaded.');dayData[key]=data;const slots=data.slots||[];if(data.dailyLimitReached||slots.length===0){statusEl.textContent=data.dailyLimitReached?'This date has reached its daily request limit. Please choose another date.':'No appointment times are currently available. Please choose another date.';return;}slots.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='cal-slot';b.textContent=t;b.addEventListener('click',()=>{document.querySelectorAll('.cal-slot.selected').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedTime=t;timeInput.value=t;dateInput.value=key;const nice=new Date(key+'T12:00:00');selectedEl.innerHTML='Selected: <strong>'+new Intl.DateTimeFormat('en',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:tz}).format(nice)+' · '+t+'</strong> (Casablanca time)';selectedEl.hidden=false;statusEl.textContent='This is an appointment request. The time is held only after the request is accepted.';});slotsEl.appendChild(b);});statusEl.textContent='Times are displayed in Casablanca time. Select one to attach it to your application.';}catch(err){if(req===requestCounter)statusEl.textContent=err.message;}}
+document.getElementById('cal-prev').addEventListener('click',()=>{shownMonth.setMonth(shownMonth.getMonth()-1);renderMonth();});document.getElementById('cal-next').addEventListener('click',()=>{shownMonth.setMonth(shownMonth.getMonth()+1);renderMonth();});
+renderMonth();
+// The booking request is posted to Apps Script in a hidden iframe. Apps Script
+// replies with a small HTML page that posts a nonce-protected result to this page.
+const resultFrame=document.createElement('iframe');resultFrame.name='consilium-submit-frame';resultFrame.title='Application submission response';resultFrame.style.display='none';document.body.appendChild(resultFrame);
+let waitingForSubmit=false;
+window.addEventListener('message',event=>{const d=event.data;if(!d||d.type!=='consilium-submit-result'||d.nonce!==document.getElementById('submission-nonce').value||!waitingForSubmit)return;waitingForSubmit=false;const button=form.querySelector('button[type="submit"]');if(d.ok){form.style.display='none';document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}else{button.disabled=false;button.textContent='Submit application ↗';alert(d.error||'Your application could not be submitted. Please try again.');}});
+form.addEventListener('submit',function(e){e.preventDefault();if(!form.reportValidity())return;if(!dateInput.value||!timeInput.value){alert('Please select an available appointment date and time.');calendar.scrollIntoView({behavior:'smooth',block:'center'});return;}if(!CONSILIUM_APPS_SCRIPT_URL){alert('The Consilium scheduling service has not been connected yet. Add the deployed Apps Script URL before accepting applications.');return;}const button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent='Submitting…';const nonce=crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2);document.getElementById('submission-nonce').value=nonce;form.action=CONSILIUM_APPS_SCRIPT_URL;form.method='POST';form.target='consilium-submit-frame';waitingForSubmit=true;form.submit();setTimeout(()=>{if(waitingForSubmit){waitingForSubmit=false;button.disabled=false;button.textContent='Submit application ↗';alert('We could not confirm the submission response. Please check with Consilium before submitting again.');}},20000);});
 </script>
 </body>
 </html>
