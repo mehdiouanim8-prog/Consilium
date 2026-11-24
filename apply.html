@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Apply to Consilium. Share your objectives and how we may be able to help.">
+<title>Apply to Consilium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--fg:#fff;--muted:#aaa;--line:#303030;--max:900px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}.container{width:min(var(--max),calc(100% - 40px));margin:auto}
+header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:600;letter-spacing:.09em;text-transform:uppercase}.star{width:27px;height:27px}
+.back{font-size:14px;color:#bbb}.intro{padding:62px 0 32px}.label{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:#999}
+h1{font-size:clamp(42px,7vw,70px);line-height:1.02;letter-spacing:-.035em;font-weight:500;margin:15px 0}
+.intro p{font-size:19px;line-height:1.5;color:#bdbdbd;font-weight:300;max-width:650px;margin:0}
+form{padding:28px 0 60px}.section-title{font-size:22px;font-weight:500;margin:30px 0 17px;padding-top:23px;border-top:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:19px 20px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}
+label,.field-label{font-size:14px;color:#e4e4e4;font-weight:500}
+input,select,textarea{width:100%;min-height:48px;background:#090909;color:#fff;border:1px solid #444;border-radius:0;padding:12px 13px;font:400 16px "IBM Plex Sans Condensed",Arial,sans-serif;outline:none}
+textarea{min-height:130px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#fff}::placeholder{color:#777}
+.hint{font-size:13px;color:#888;margin:0}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:15px;color:#d0d0d0;line-height:1.35}
+.check input{width:17px;height:17px;min-height:17px;margin:2px 0 0;accent-color:#fff;flex:none}
+.submit{margin-top:28px;width:100%;min-height:56px;border:1px solid #fff;background:#fff;color:#000;font:600 16px "IBM Plex Sans Condensed",Arial,sans-serif;letter-spacing:.04em;cursor:pointer}
+.submit:hover{background:#000;color:#fff}.privacy{font-size:13px;line-height:1.5;color:#888;margin-top:13px}
+.success{display:none;margin:20px 0 60px;border:1px solid #777;padding:30px}.success h2{font-size:30px;font-weight:500;margin:0 0 10px}.success p{color:#ccc;font-size:18px;line-height:1.5;margin:0}
+footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px}
+@media(max-width:620px){.container{width:calc(100% - 32px)}header{height:72px}.brand{font-size:18px}.star{width:24px;height:24px}.intro{padding-top:45px}.grid,.check-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{margin-top:25px}}
+</style>
+</head>
+<body>
+<header class="container">
+<a class="brand" href="index.html" aria-label="Consilium home"><svg class="star" viewBox="0 0 100 100" role="img" aria-label="Eight-point star"><path d="M50 0 L59 39 L84 16 L66 43 L100 50 L66 57 L84 84 L59 61 L50 100 L41 61 L16 84 L34 57 L0 50 L34 43 L16 16 L41 39 Z" fill="#fff"/></svg><span>Consilium</span></a>
+<a class="back" href="index.html">← Back to homepage</a>
+</header>
+<main class="container">
+<section class="intro">
+<div class="label">Consilium · Application</div>
+<h1>What are you working towards?</h1>
+<p>Tell us about your objectives, where you are today, and how Consilium could help. Anyone can apply; every application is reviewed.</p>
+</section>
+<form id="application-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+<input type="hidden" name="_subject" value="New Consilium application">
+<h2 class="section-title">01 / About you</h2>
+<div class="grid">
+<div class="field"><label for="name">Full name *</label><input id="name" name="name" autocomplete="name" required placeholder="Your full name"></div>
+<div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+<div class="field"><label for="country">Country *</label><input id="country" name="country" autocomplete="country-name" required placeholder="Country of residence"></div>
+<div class="field"><label for="website">Website, LinkedIn, or reference page</label><input id="website" name="reference_url" type="url" placeholder="https://"></div>
+<div class="field full"><label for="type">Which best describes you? *</label>
+<select id="type" name="applicant_type" required>
+<option value="">Select applicant type</option>
+<option>Just starting / aspiring entrepreneur</option><option>Entrepreneur / founder</option><option>Small business</option><option>Microbusiness / small firm</option><option>Established company</option><option>Parent company / holding company</option><option>Investor</option><option>Startup / venture team</option><option>Professional / independent expert</option><option>Other</option>
+</select></div>
+<div class="field full"><label for="market">Industry or market</label><input id="market" name="industry_market" placeholder="e.g. technology, finance, retail, healthcare, infrastructure"></div>
+</div>
+<h2 class="section-title">02 / Your objectives</h2>
+<p class="hint">Select as many as apply.</p>
+<div class="check-grid" style="margin-top:16px">
+<label class="check"><input type="checkbox" name="objectives[]" value="Business growth">Business growth</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Sales and revenue">Sales and revenue</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Guidance and strategic advisory">Guidance and strategic advisory</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Startup development">Startup development</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Acquisition or exit">Acquisition or exit</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="High-ROI opportunities">High-ROI opportunities</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="New opportunities">Discovering new opportunities</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Connections and network">Connections and network</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Market research and intelligence">Market research and intelligence</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Planning and execution">Planning and execution</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Investment evaluation">Investment evaluation</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="International expansion">International expansion</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Partnerships">Partnerships</label>
+<label class="check"><input type="checkbox" name="objectives[]" value="Other objective">Other</label>
+</div>
+<div class="grid" style="margin-top:24px">
+<div class="field full"><label for="working-toward">What are you working towards, and how could Consilium help? *</label><textarea id="working-toward" name="working_toward" required placeholder="Describe your goals, current situation, challenges, or opportunity. Write in your own words."></textarea></div>
+<div class="field full"><label for="additional">Anything else we should know? (optional)</label><textarea id="additional" name="additional_context" placeholder="Share any useful context, links, or timing."></textarea></div>
+</div>
+<h2 class="section-title">03 / Request a consultation</h2>
+<p class="hint" style="font-size:15px;line-height:1.5;color:#bbb;margin:0 0 18px">Choose an available 45-minute consultation time below. Your request will be subject to Consilium review.</p>
+<div style="width:100%;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:2px">
+  <iframe
+    src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1NcXMXYgkcxykK7Twp_nwXFbaU-vFUl_lkXciVlC555OWgAHI7DOSRp8djmmmlB8Ui2m6WSoka?gv=true"
+    title="Consilium consultation booking calendar"
+    style="border:0;width:100%;height:850px;display:block;background:#fff"
+    width="100%"
+    height="850"
+    frameborder="0"
+    loading="lazy"
+    allow="payment"
+  ></iframe>
+</div>
+
+<button class="submit" type="submit">Submit application ↗</button>
+<p class="privacy">Submitting this form allows Consilium to review the information you provide and contact you about your application.</p>
+</form>
+<section class="success" id="success" role="status" aria-live="polite">
+<h2>Application received.</h2>
+<p>Thank you for your interest in Consilium. We’ll review your application and get back to you shortly.</p>
+</section>
+</main>
+<footer><div class="container">Consilium · Market intelligence. Precise planning. Execution. Results.</div></footer>
+<script>
+const form=document.getElementById('application-form');
+form.addEventListener('submit',async function(e){
+  e.preventDefault();
+  if(!form.reportValidity()) return;
+  const endpoint=form.getAttribute('action');
+  if(endpoint.includes('YOUR_FORM_ID')){
+    alert('The application form is designed, but submissions are not connected yet. Connect a form endpoint before publishing.');
+    return;
+  }
+  const button=form.querySelector('button[type="submit"]');
+  button.disabled=true;button.textContent='Submitting…';
+  try{
+    const response=await fetch(endpoint,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+    if(!response.ok) throw new Error('Submission failed');
+    form.style.display='none';document.getElementById('success').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(err){
+    alert('We could not submit your application right now. Please try again later.');
+    button.disabled=false;button.textContent='Submit application ↗';
+  }
+});
+</script>
+</body>
+</html>
