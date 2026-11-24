@@ -41,9 +41,9 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 </header>
 <main class="container">
 <section class="intro">
-<div class="label">Consilium · Application</div>
+<div class="label">Application</div>
 <h1>What are you working towards?</h1>
-<p>Tell us about your objectives, where you are today, and how Consilium could help. Anyone can apply; every application is reviewed.</p>
+<p>Tell us about your objectives, where you are today, and where you wanna be tomorrow, we are very precise with whom we choose.</p>
 </section>
 <form id="application-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
 <input type="hidden" name="_subject" value="New Consilium application">
@@ -82,8 +82,8 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 <div class="field full"><label for="working-toward">What are you working towards, and how could Consilium help? *</label><textarea id="working-toward" name="working_toward" required placeholder="Describe your goals, current situation, challenges, or opportunity. Write in your own words."></textarea></div>
 <div class="field full"><label for="additional">Anything else we should know? (optional)</label><textarea id="additional" name="additional_context" placeholder="Share any useful context, links, or timing."></textarea></div>
 </div>
-<h2 class="section-title">03 / Request a consultation</h2>
-<p class="hint" style="font-size:15px;line-height:1.5;color:#bbb;margin:0 0 18px">Choose an available 45-minute consultation time below. Your request will be subject to Consilium review.</p>
+<h2 class="section-title">03 / Book an Appointment</h2>
+<p class="hint" style="font-size:15px;line-height:1.5;color:#bbb;margin:0 0 18px">Choose an available time below. Your request will be reviewed Carefully and Respectfully.</p>
 <div style="width:100%;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:2px">
   <iframe
     src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1NcXMXYgkcxykK7Twp_nwXFbaU-vFUl_lkXciVlC555OWgAHI7DOSRp8djmmmlB8Ui2m6WSoka?gv=true"
@@ -97,15 +97,15 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
   ></iframe>
 </div>
 
-<button class="submit" type="submit">Submit application ↗</button>
-<p class="privacy">Submitting this form allows Consilium to review the information you provide and contact you about your application.</p>
+<button class="submit" type="submit">Submit application</button>
+<p class="privacy">Submitting this form Consilium will have access to the information you registered for the purpose of contacting you about your application.</p>
 </form>
 <section class="success" id="success" role="status" aria-live="polite">
 <h2>Application received.</h2>
 <p>Thank you for your interest in Consilium. We’ll review your application and get back to you shortly.</p>
 </section>
 </main>
-<footer><div class="container">Consilium · Market intelligence. Precise planning. Execution. Results.</div></footer>
+<footer><div class="container">Intelligence. Precise Planning. Execution. Results.</div></footer>
 <script>
 const form=document.getElementById('application-form');
 form.addEventListener('submit',async function(e){
@@ -125,7 +125,7 @@ form.addEventListener('submit',async function(e){
     window.scrollTo({top:0,behavior:'smooth'});
   }catch(err){
     alert('We could not submit your application right now. Please try again later.');
-    button.disabled=false;button.textContent='Submit application ↗';
+    button.disabled=false;button.textContent='Submit application';
   }
 });
 </script>
