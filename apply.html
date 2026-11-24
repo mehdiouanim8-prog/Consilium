@@ -46,7 +46,7 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 <h1>What are you working towards?</h1>
 <p>Tell us about your objectives, where you are today, and how Consilium could help. Anyone can apply; every application is reviewed.</p>
 </section>
-<form id="application-form" action="https://script.google.com/macros/s/AKfycbwuubYAbVUVbomh8r5rbNoKYkYQwtu3eJ_1mnoO-GalxAChlgAbJjov_6PAHi6yqptf/exec" method="POST">
+<form id="application-form" action="https://script.google.com/macros/s/AKfycbwmQwXHx_bwE2JtgEqU9Ybu617YST9sS3FhQtNsPOtb-JfuaVwEByHhOReON-rdjd0E/exec" method="POST">
 <h2 class="section-title">01 / About you</h2>
 <div class="grid">
 <div class="field"><label for="name">Full name *</label><input id="name" name="name" autocomplete="name" required placeholder="Your full name"></div>
@@ -125,7 +125,7 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
   const names=new Intl.DisplayNames(['en'],{type:'region'});
   codes.map(code=>({name:names.of(code)})).sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{const o=document.createElement('option');o.value=item.name;o.textContent=item.name;select.appendChild(o);});
 })();
-const CONSILIUM_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuubYAbVUVbomh8r5rbNoKYkYQwtu3eJ_1mnoO-GalxAChlgAbJjov_6PAHi6yqptf/exec';
+const CONSILIUM_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmQwXHx_bwE2JtgEqU9Ybu617YST9sS3FhQtNsPOtb-JfuaVwEByHhOReON-rdjd0E/exec';
 const form=document.getElementById('application-form');
 const calendar=document.getElementById('booking-calendar');
 const monthLabel=document.getElementById('cal-month');
@@ -150,7 +150,7 @@ document.getElementById('cal-next').addEventListener('click',()=>{shownMonth.set
 renderMonth();
 
 const resultFrame=document.createElement('iframe');resultFrame.name='consilium-submit-frame';resultFrame.title='Application submission response';resultFrame.style.display='none';document.body.appendChild(resultFrame);
-window.addEventListener('message',event=>{const d=event.data;if(!d||d.type!=='consilium-submit-result'||d.nonce!==document.getElementById('submission-nonce').value||!waitingForSubmit)return;waitingForSubmit=false;const button=form.querySelector('button[type="submit"]');if(d.ok){submissionLocked=true;form.style.display='none';document.getElementById('success-reference').textContent='Application reference: '+d.reference+(d.error?' — '+d.error:'');document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}else{submissionLocked=false;button.disabled=false;button.textContent='Submit application ↗';alert(d.error||'Your application could not be submitted. Please try again.');}});
+window.addEventListener('message',event=>{const d=event.data;if(!d||d.type!=='consilium-submit-result'||d.nonce!==document.getElementById('submission-nonce').value||!waitingForSubmit)return;waitingForSubmit=false;const button=form.querySelector('button[type="submit"]');if(d.ok){const submittedDate=dateInput.value;const dayButton=[...daysEl.querySelectorAll('.cal-day')].find(x=>x.dataset.date===submittedDate);if(dayButton)chooseDate(submittedDate,dayButton);submissionLocked=true;form.style.display='none';document.getElementById('success-reference').textContent='Application reference: '+d.reference;document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}else{submissionLocked=false;button.disabled=false;button.textContent='Submit application ↗';alert(d.error||'Your application could not be submitted. Please try again.');}});
 form.addEventListener('submit',function(e){e.preventDefault();if(submissionLocked||waitingForSubmit)return;if(!form.reportValidity())return;if(!dateInput.value||!timeInput.value){alert('Please select an available appointment date and time.');calendar.scrollIntoView({behavior:'smooth',block:'center'});return;}if(!CONSILIUM_APPS_SCRIPT_URL){alert('The Consilium scheduling service has not been connected yet.');return;}const button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent='Submitting…';submissionLocked=true;const nonce=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2);document.getElementById('submission-nonce').value=nonce;form.action=CONSILIUM_APPS_SCRIPT_URL;form.method='POST';form.target='consilium-submit-frame';waitingForSubmit=true;form.submit();setTimeout(()=>{if(waitingForSubmit){waitingForSubmit=false;submissionLocked=false;button.disabled=false;button.textContent='Submit application ↗';alert('We could not confirm the submission response. Please check with Consilium before submitting again.');}},25000);});
 </script>
 </body>
