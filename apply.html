@@ -46,7 +46,7 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
 <h1>What are you working towards?</h1>
 <p>Tell us about your objectives, where you are today, and how Consilium could help. Anyone can apply; every application is reviewed.</p>
 </section>
-<form id="application-form" action="https://script.google.com/macros/s/AKfycbwmQwXHx_bwE2JtgEqU9Ybu617YST9sS3FhQtNsPOtb-JfuaVwEByHhOReON-rdjd0E/exec" method="POST">
+<form id="application-form" action="https://script.google.com/macros/s/AKfycbwuubYAbVUVbomh8r5rbNoKYkYQwtu3eJ_1mnoO-GalxAChlgAbJjov_6PAHi6yqptf/exec" method="POST">
 <h2 class="section-title">01 / About you</h2>
 <div class="grid">
 <div class="field"><label for="name">Full name *</label><input id="name" name="name" autocomplete="name" required placeholder="Your full name"></div>
@@ -125,7 +125,7 @@ footer{border-top:1px solid var(--line);padding:20px 0;color:#888;font-size:13px
   const names=new Intl.DisplayNames(['en'],{type:'region'});
   codes.map(code=>({name:names.of(code)})).sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{const o=document.createElement('option');o.value=item.name;o.textContent=item.name;select.appendChild(o);});
 })();
-const CONSILIUM_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmQwXHx_bwE2JtgEqU9Ybu617YST9sS3FhQtNsPOtb-JfuaVwEByHhOReON-rdjd0E/exec';
+const CONSILIUM_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuubYAbVUVbomh8r5rbNoKYkYQwtu3eJ_1mnoO-GalxAChlgAbJjov_6PAHi6yqptf/exec';
 const form=document.getElementById('application-form');
 const calendar=document.getElementById('booking-calendar');
 const monthLabel=document.getElementById('cal-month');
